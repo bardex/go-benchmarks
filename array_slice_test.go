@@ -4,9 +4,8 @@ import (
 	"testing"
 )
 
-const arraySize = 1000_000
-
 func BenchmarkIndexedArrays(b *testing.B) {
+	const arraySize = 1000_000
 	b.Run("indexed array", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			items := [arraySize]bool{}
@@ -31,7 +30,7 @@ func BenchmarkIndexedArrays(b *testing.B) {
 			}
 		}
 	})
-	b.Run("indexed map without capacity", func(b *testing.B) {
+	b.Run("indexed map no cap", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			items := make(map[int]bool)
 			for n := 0; n < arraySize; n++ {

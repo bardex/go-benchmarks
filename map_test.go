@@ -21,14 +21,15 @@ func BenchmarkMaps50_50(b *testing.B) {
 						defer mu.Unlock()
 						items[k] = k
 					}()
+				} else {
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						mu.Lock()
+						defer mu.Unlock()
+						_ = items[k]
+					}()
 				}
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
-					mu.Lock()
-					defer mu.Unlock()
-					_ = items[k]
-				}()
 			}
 			wg.Wait()
 		}
@@ -48,14 +49,15 @@ func BenchmarkMaps50_50(b *testing.B) {
 						defer mu.Unlock()
 						items[k] = k
 					}()
+				} else {
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						mu.RLock()
+						defer mu.RUnlock()
+						_ = items[k]
+					}()
 				}
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
-					mu.RLock()
-					defer mu.RUnlock()
-					_ = items[k]
-				}()
 			}
 			wg.Wait()
 		}
@@ -72,12 +74,13 @@ func BenchmarkMaps50_50(b *testing.B) {
 						defer wg.Done()
 						items.Store(k, k)
 					}()
+				} else {
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						_, _ = items.Load(k)
+					}()
 				}
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
-					_, _ = items.Load(k)
-				}()
 			}
 			wg.Wait()
 		}
